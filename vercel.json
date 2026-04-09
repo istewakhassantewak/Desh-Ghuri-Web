@@ -8,12 +8,7 @@
   ],
   "routes": [
     {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/media/(.*)",
-      "dest": "/media/$1"
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
