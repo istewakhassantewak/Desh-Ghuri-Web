@@ -16,10 +16,10 @@ def home(request):
     """
     try:
         # Get all packages initially
-        packages = Packages.objects.all()
+        packages_qs = Packages.objects.all()
         
         # Get all unique tour locations
-        tour_locations = TourLocation.objects.values_list('location', flat=True).distinct()
+        tour_locations_qs = TourLocation.objects.values_list('location', flat=True).distinct()
         
         # Handle filtering
         if request.method == 'GET' and ('location' in request.GET or 'date' in request.GET):
@@ -28,18 +28,21 @@ def home(request):
             
             # Apply location filter if provided
             if filter_location:
-                packages = packages.filter(location__location=filter_location).distinct()
+                packages_qs = packages_qs.filter(location__location=filter_location).distinct()
             
             # Apply date filter if provided
             if filter_date:
                 try:
                     filter_date_obj = datetime.strptime(filter_date, '%Y-%m-%d').date()
-                    packages = packages.filter(
+                    packages_qs = packages_qs.filter(
                         start_date__date__lte=filter_date_obj,
                         end_date__date__gte=filter_date_obj
                     ).distinct()
                 except ValueError:
                     messages.error(request, "Invalid date selected. Please choose a valid date.")
+        # Evaluate querysets inside try, so DB issues are handled gracefully.
+        packages = list(packages_qs)
+        tour_locations = list(tour_locations_qs)
     except Exception:
         # Fail gracefully on startup/runtime DB issues in production serverless environments.
         packages = []
