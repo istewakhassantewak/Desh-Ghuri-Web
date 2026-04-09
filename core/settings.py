@@ -29,22 +29,18 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-only-key-change-in-pro
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.getenv(
-        'ALLOWED_HOSTS',
-        '127.0.0.1,localhost,.vercel.app,desh-ghuri-web.vercel.app'
-    ).split(',')
-    if host.strip()
+_default_allowed_hosts = ['127.0.0.1', 'localhost', '.vercel.app', 'desh-ghuri-web.vercel.app']
+_parsed_allowed_hosts = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '').split(',') if host.strip()]
+ALLOWED_HOSTS = _parsed_allowed_hosts if _parsed_allowed_hosts else _default_allowed_hosts
+
+_default_csrf_trusted_origins = [
+    'http://127.0.0.1',
+    'https://127.0.0.1',
+    'https://*.vercel.app',
+    'https://desh-ghuri-web.vercel.app',
 ]
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.getenv(
-        'CSRF_TRUSTED_ORIGINS',
-        'http://127.0.0.1,https://127.0.0.1,https://*.vercel.app,https://desh-ghuri-web.vercel.app'
-    ).split(',')
-    if origin.strip()
-]
+_parsed_csrf_origins = [origin.strip() for origin in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if origin.strip()]
+CSRF_TRUSTED_ORIGINS = _parsed_csrf_origins if _parsed_csrf_origins else _default_csrf_trusted_origins
 
 
 # Application definition
