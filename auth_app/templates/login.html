@@ -21,7 +21,6 @@
             
             <form method="POST" action="{% url 'login' %}">
               {% csrf_token %}
-              <input type="hidden" name="next" value="{{ next|default:'' }}">
               <div class="mb-3">
                 <label for="role" class="form-label">Login as</label>
                 <select class="form-select form-select-lg" id="role" name="role" required>
