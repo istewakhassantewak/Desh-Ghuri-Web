@@ -14,31 +14,36 @@ def home(request):
     Displays the home page with a list of all tour packages.
     Handles filtering of packages based on location and date provided in GET parameters.
     """
-    # Get all packages initially
-    packages = Packages.objects.all()
-    
-    # Get all unique tour locations
-    tour_locations = TourLocation.objects.values_list('location', flat=True).distinct()
-    
-    # Handle filtering
-    if request.method == 'GET' and ('location' in request.GET or 'date' in request.GET):
-        filter_location = request.GET.get('location', '')
-        filter_date = request.GET.get('date', '')
+    try:
+        # Get all packages initially
+        packages = Packages.objects.all()
         
-        # Apply location filter if provided
-        if filter_location:
-            packages = packages.filter(location__location=filter_location).distinct()
+        # Get all unique tour locations
+        tour_locations = TourLocation.objects.values_list('location', flat=True).distinct()
         
-        # Apply date filter if provided
-        if filter_date:
-            try:
-                filter_date_obj = datetime.strptime(filter_date, '%Y-%m-%d').date()
-                packages = packages.filter(
-                    start_date__date__lte=filter_date_obj,
-                    end_date__date__gte=filter_date_obj
-                ).distinct()
-            except ValueError:
-                messages.error(request, "Invalid date selected. Please choose a valid date.")
+        # Handle filtering
+        if request.method == 'GET' and ('location' in request.GET or 'date' in request.GET):
+            filter_location = request.GET.get('location', '')
+            filter_date = request.GET.get('date', '')
+            
+            # Apply location filter if provided
+            if filter_location:
+                packages = packages.filter(location__location=filter_location).distinct()
+            
+            # Apply date filter if provided
+            if filter_date:
+                try:
+                    filter_date_obj = datetime.strptime(filter_date, '%Y-%m-%d').date()
+                    packages = packages.filter(
+                        start_date__date__lte=filter_date_obj,
+                        end_date__date__gte=filter_date_obj
+                    ).distinct()
+                except ValueError:
+                    messages.error(request, "Invalid date selected. Please choose a valid date.")
+    except Exception:
+        # Fail gracefully on startup/runtime DB issues in production serverless environments.
+        packages = []
+        tour_locations = []
     
     context = {
         'packages': packages,
