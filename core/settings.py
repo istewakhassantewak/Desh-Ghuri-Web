@@ -108,18 +108,30 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-_database_url = os.getenv('DATABASE_URL', '').strip()
+_database_url = (
+    os.getenv('DATABASE_URL', '').strip()
+    or os.getenv('POSTGRES_URL', '').strip()
+    or os.getenv('POSTGRESQL_URL', '').strip()
+)
 if _database_url:
     DATABASES = {
         'default': dj_database_url.parse(_database_url, conn_max_age=600, ssl_require=not DEBUG),
     }
 else:
+    _sqlite_name = BASE_DIR / 'db.sqlite3'
+    if os.getenv('VERCEL'):
+        # Vercel filesystem is read-only except /tmp
+        _sqlite_name = '/tmp/db.sqlite3'
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'NAME': _sqlite_name,
         }
     }
+
+# In serverless fallback mode without external DB, avoid DB-backed session crashes.
+if os.getenv('VERCEL') and not _database_url:
+    SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 
 # Password validation
