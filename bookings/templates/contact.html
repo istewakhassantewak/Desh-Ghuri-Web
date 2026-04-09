@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - Desh Ghuri{% endblock %}
+
+{% block content %}
+<section class="modern-hero">
+  <div class="container">
+    <div class="modern-hero__inner">
+      <p class="modern-hero__tag"><i class="fas fa-headset me-2"></i>Support & Partnership</p>
+      <h1>Let’s plan your next trip together</h1>
+      <p class="modern-hero__lead">Need help with bookings, custom tours, or guide onboarding? Our team is ready to help.</p>
+      <div class="modern-hero__actions">
+        <a href="#contactForm" class="btn btn-primary">Send Message</a>
+        <a href="mailto:hello@deshghuri.com" class="btn btn-outline-primary">Email Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+
+  <!-- Contact Info Section -->
+  <section class="row mb-5 align-items-center">
+    <div class="col-lg-6 mb-4 mb-lg-0">
+      <h1 class="display-4 fw-bold mb-4">Contact <span class="text-primary">Us</span></h1>
+      <p class="lead text-muted">Have questions about our packages? Interested in joining as a guide? We're here for you.</p>
+      <p class="text-muted">Our team is ready to assist with any inquiries. Reach out directly or send a message using the form below.</p>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body p-4">
+          {% for info in contact_info %}
+          <div class="d-flex align-items-start mb-4">
+            <i class="fas {{ info.icon }} text-primary fa-2x me-3 mt-1"></i>
+            <div>
+              <h5 class="mb-1">{{ info.title }}</h5>
+              <p class="mb-0">{{ info.detail|linebreaksbr }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Form -->
+  <section class="row mb-5">
+    <div class="col-lg-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+          <h2 class="mb-4 text-center">Send Us a Message</h2>
+          <form id="contactForm" aria-label="Contact Form">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="name" class="form-label">Your Name</label>
+                <input type="text" id="name" class="form-control" placeholder="John Doe" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" id="email" class="form-control" placeholder="john@example.com" required>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" id="phone" class="form-control" placeholder="+880 123 456 7890" pattern="^\+?\d{10,15}$">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="subject" class="form-label">Subject</label>
+                <select id="subject" class="form-select" required>
+                  <option value="" disabled selected>Select a Subject</option>
+                  <option value="general">General Inquiry</option>
+                  <option value="package">Package Information</option>
+                  <option value="booking">Booking Issue</option>
+                  <option value="become-guide">Become a Tour Guide</option>
+                  <option value="partnership">Business Partnership</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="message" class="form-label">Your Message</label>
+              <textarea id="message" class="form-control" rows="5" placeholder="How can we help you?" required></textarea>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="terms" required>
+              <label class="form-check-label" for="terms">
+                I agree to the <a href="{% url 'about' %}">privacy policy</a> and <a href="{% url 'about' %}">terms of service</a>.
+              </label>
+            </div>
+
+            <div class="text-center">
+              <button type="submit" id="submitBtn" class="btn btn-primary px-5 py-2">Send Message</button>
+            </div>
+            <p class="text-center text-muted small mt-3 mb-0">Response time: typically within 24 hours.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map -->
+  <section class="row mb-5">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+          <h2 class="text-center pt-4 mb-4">Find Us</h2>
+          <div class="ratio ratio-16x9">
+            <iframe src="https://www.google.com/maps?q=Dhaka%2C%20Bangladesh&output=embed" 
+              width="100%" height="100%" style="border:0;" allowfullscreen loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Media -->
+  <section class="row">
+    <div class="col-12 text-center">
+      <h2 class="mb-4">Follow Us</h2>
+      <p class="mb-4">Stay connected for updates, stories & offers.</p>
+      <div class="d-flex justify-content-center flex-wrap gap-3">
+        {% for platform in social_links %}
+        <a href="{{ platform.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-{{ platform.color }} rounded-circle d-flex align-items-center justify-content-center"
+           style="width: 50px; height: 50px;" aria-label="{{ platform.name }}">
+          <i class="fab fa-{{ platform.icon }}"></i>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form?.addEventListener('submit', function (e) {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Sending...';
+
+      setTimeout(() => {
+        alert('✅ Thank you! We will respond shortly.');
+        form.reset();
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Send Message';
+      }, 1000);
+    });
+  });
+</script>
+{% endblock %}

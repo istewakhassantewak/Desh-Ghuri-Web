@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Desh Ghuri{% endblock %}
+
+{% block content %}
+<section class="modern-hero">
+  <div class="container">
+    <div class="modern-hero__inner">
+      <p class="modern-hero__tag"><i class="fas fa-compass me-2"></i>About Desh Ghuri</p>
+      <h1>We design meaningful travel experiences across Bangladesh</h1>
+      <p class="modern-hero__lead">From beaches and tea gardens to heritage sites, we connect travelers with trusted local guides for authentic journeys.</p>
+      <div class="modern-hero__actions">
+        <a href="{% url 'home' %}#tour-packages" class="btn btn-primary">Explore Packages</a>
+        <a href="{% url 'contact' %}" class="btn btn-outline-primary">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+  <!-- Hero Section -->
+  <section class="row align-items-center mb-5">
+    <div class="col-lg-6 mb-4 mb-lg-0">
+      <h2 class="display-6 fw-bold mb-3">Why We Started</h2>
+      <p class="lead text-muted">Unforgettable travel experiences connecting you to cultures, people, and memories that last a lifetime.</p>
+      <p class="text-muted">Since 2021, we've become a trusted platform for authentic, locally-guided adventures around the globe.</p>
+      <a href="{% url 'home' %}#tour-packages" class="btn btn-primary mt-3 shadow-sm">Explore Our Packages</a>
+    </div>
+    <div class="col-lg-6">
+      <img src="{% static 'img/about-hero.jpg' %}" alt="Travel Experience" class="img-fluid rounded shadow" onerror="this.src='https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?auto=format&fit=crop&w=600&q=60'">
+    </div>
+  </section>
+
+  <!-- Mission & Vision -->
+  <section class="row bg-light rounded p-4 mb-5 shadow-sm">
+    <div class="col-md-6 mb-4 mb-md-0 d-flex align-items-start">
+      <i class="fas fa-bullseye text-primary fa-3x me-3 mt-1"></i>
+      <div>
+        <h3 class="fw-semibold">Our Mission</h3>
+        <p class="text-muted">Connecting travelers with meaningful local experiences that are memorable, sustainable, and culturally enriching.</p>
+      </div>
+    </div>
+    <div class="col-md-6 d-flex align-items-start">
+      <i class="fas fa-eye text-primary fa-3x me-3 mt-1"></i>
+      <div>
+        <h3 class="fw-semibold">Our Vision</h3>
+        <p class="text-muted">To become the world’s most trusted platform for immersive travel that fosters mutual respect and empowers local communities.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="text-center mb-5">
+    <h2 class="fw-bold mb-4">Our Core Values</h2>
+    <div class="row">
+      {% for value in values %}
+      <div class="col-md-4 mb-4">
+        <article class="card border-0 shadow-sm h-100 transition-all hover-shadow">
+          <div class="card-body">
+            <div class="mb-3">
+              <i class="fas {{ value.icon }} text-primary fa-3x"></i>
+            </div>
+            <h4 class="fw-semibold">{{ value.title }}</h4>
+            <p class="text-muted">{{ value.description }}</p>
+          </div>
+        </article>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section class="mb-5">
+    <h2 class="text-center fw-bold mb-4">Meet Our Team</h2>
+    <div class="row">
+      {% for member in team %}
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card border-0 shadow-sm h-100 text-center hover-shadow transition-all">
+          <img src="{% static member.image %}" class="card-img-top rounded-top" alt="{{ member.name }}" onerror="this.src='{{ member.fallback_image }}'">
+          <div class="card-body">
+            <h5 class="card-title mb-1">{{ member.name }}</h5>
+            <p class="text-muted small">{{ member.role }}</p>
+            <div class="social-icons mt-2">
+              {% if member.linkedin %}<a href="{{ member.linkedin }}" class="text-muted me-2"><i class="fab fa-linkedin"></i></a>{% endif %}
+              {% if member.twitter %}<a href="{{ member.twitter }}" class="text-muted me-2"><i class="fab fa-twitter"></i></a>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Our Story -->
+  <section>
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4 p-md-5">
+        <h2 class="fw-bold mb-4">Our Story</h2>
+        <p class="text-muted">Desh Ghuri was created with one goal: make travel immersive and personal. After exploring various corners of the world, we realized the best experiences came from local guides and authentic human connections. So, in 2021, we launched a platform to bring that vision to life.</p>
+
+        <p class="text-muted">From a few destinations to a global network of passionate guides, we’ve grown steadily—while staying true to our commitment to authenticity, affordability, and fair practices.</p>
+
+        <p class="text-muted">Every trip booked through Desh Ghuri is more than a journey—it’s a cultural exchange that benefits both traveler and host. Our platform ensures guides are paid fairly and that travelers get genuine, heartfelt experiences.</p>
+
+        <div class="text-center mt-4">
+          <a href="{% url 'contact' %}" class="btn btn-outline-primary">Get in Touch</a>
+          <a href="{% url 'home' %}" class="btn btn-primary ms-2">Explore Packages</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

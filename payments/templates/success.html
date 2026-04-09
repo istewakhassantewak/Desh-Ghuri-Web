@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Success{% endblock %}
+
+{% block content %}
+<section class="py-5 status-shell">
+  <div class="container">
+    <div class="card shadow-sm text-center p-5">
+      <div class="status-icon success text-success"><i class="fas fa-circle-check fa-3x"></i></div>
+      <h2 class="mb-3">Payment Successful</h2>
+      <p class="text-muted mb-4">Your booking has been confirmed.</p>
+      <p><strong>Booking ID:</strong> #{{ booking.id }}</p>
+      <p><strong>Amount:</strong> ৳{{ booking.amount }}</p>
+      <a class="btn btn-primary" href="{% url 'dashboard' %}">Go to Dashboard</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

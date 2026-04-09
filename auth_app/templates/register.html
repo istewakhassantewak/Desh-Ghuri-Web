@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - Desh Ghuri{% endblock %}
+
+{% block content %}
+<section class="register-section py-5 auth-shell">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <div class="card shadow-lg">
+          <div class="card-header text-white">
+            <h3 class="mb-0 text-center">Create Your Account</h3>
+          </div>
+          <div class="card-body p-4">
+            <div class="btn-group w-100 mb-4">
+              <button type="button" class="btn btn-outline-primary {% if request.GET.role != 'tour_guide' %}active{% endif %}" data-role-tab="traveler">Traveler</button>
+              <button type="button" class="btn btn-outline-primary {% if request.GET.role == 'tour_guide' %}active{% endif %}" data-role-tab="tour_guide">Tour Guide</button>
+            </div>
+            <form method="POST" action="{% url 'register' %}">
+              {% csrf_token %}
+              <input type="hidden" id="userTypeInput" name="user_type" value="{% if request.GET.role == 'tour_guide' %}tour_guide{% else %}traveler{% endif %}">
+
+              <div data-role-pane="traveler" {% if request.GET.role == 'tour_guide' %}style="display:none;"{% endif %}>
+                <div class="row g-3">
+                  <div class="col-md-6"><input class="form-control" name="touristFirstName" placeholder="First name" required></div>
+                  <div class="col-md-6"><input class="form-control" name="touristLastName" placeholder="Last name" required></div>
+                  <div class="col-md-6"><input class="form-control" name="touristEmail" type="email" placeholder="Email" required></div>
+                  <div class="col-md-6"><input class="form-control" name="touristPhone" placeholder="Phone"></div>
+                  <div class="col-md-6"><input class="form-control" name="touristPassword" type="password" placeholder="Password" required></div>
+                  <div class="col-md-6"><input class="form-control" name="touristConfirmPassword" type="password" placeholder="Confirm password" required></div>
+                </div>
+              </div>
+
+              <div data-role-pane="tour_guide" {% if request.GET.role != 'tour_guide' %}style="display:none;"{% endif %}>
+                <div class="row g-3">
+                  <div class="col-md-6"><input class="form-control" name="guideFirstName" placeholder="First name"></div>
+                  <div class="col-md-6"><input class="form-control" name="guideLastName" placeholder="Last name"></div>
+                  <div class="col-md-6"><input class="form-control" name="guideEmail" type="email" placeholder="Email"></div>
+                  <div class="col-md-6"><input class="form-control" name="guidePhone" placeholder="Phone"></div>
+                  <div class="col-md-6"><input class="form-control" name="guideLocation" placeholder="Location"></div>
+                  <div class="col-md-6"><input class="form-control" name="guideExperience" type="number" min="0" placeholder="Experience (years)"></div>
+                  <div class="col-md-6"><input class="form-control" name="guidePassword" type="password" placeholder="Password"></div>
+                  <div class="col-md-6"><input class="form-control" name="guideConfirmPassword" type="password" placeholder="Confirm password"></div>
+                  <div class="col-12"><textarea class="form-control" name="guideBio" rows="3" placeholder="Short bio"></textarea></div>
+                </div>
+              </div>
+
+              <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
+              </div>
+            </form>
+          </div>
+          <div class="card-footer text-center">
+            Already have an account? <a href="{% url 'login' %}">Log in</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

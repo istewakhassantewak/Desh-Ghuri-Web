@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="modern-hero">
+  <div class="container">
+    <div class="modern-hero__inner">
+      <p class="modern-hero__tag"><i class="fas fa-receipt me-2"></i>Booking Details</p>
+      <h1>Booking #{{ booking.id }}</h1>
+      <p class="modern-hero__lead">Track booking status, traveler and guide information, and package breakdown in one place.</p>
+      <div class="modern-hero__actions">
+        <a href="{% url 'dashboard' %}" class="btn btn-primary"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Booking #{{ booking.id }}</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h2 class="mb-3">Booking Overview</h2>
+    </div>
+    <div class="col-md-4 text-md-end">
+      <span class="badge {% if booking.status == 'Success' %}bg-success{% elif booking.status == 'Pending' %}bg-warning{% else %}bg-danger{% endif %} p-2 fs-6">
+        {{ booking.status }}
+      </span>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Booking Information Column -->
+    <div class="col-md-8">
+      <!-- Package Details Card -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              {% if booking.package.image %}
+                <img src="{{ booking.package.image.url }}" alt="{{ booking.package.title }}" class="img-fluid rounded" style="height: 150px; object-fit: cover; width: 100%;">
+              {% else %}
+                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 150px;">
+                  <i class="fas fa-image text-muted fa-3x"></i>
+                </div>
+              {% endif %}
+            </div>
+            <div class="col-md-8">
+              <h4>{{ booking.package.title }}</h4>
+              <p class="text-muted mb-2"><i class="fas fa-map-marker-alt text-danger me-2"></i>{{ booking.package.main_location }}</p>
+              
+              <div class="d-flex mb-2">
+                <div class="text-muted me-3"><i class="fas fa-calendar-alt me-2"></i>Start:</div>
+                <div>{{ booking.package.start_date|date:"M d, Y" }}</div>
+              </div>
+              
+              <div class="d-flex mb-2">
+                <div class="text-muted me-3"><i class="fas fa-calendar-check me-2"></i>End:</div>
+                <div>{{ booking.package.end_date|date:"M d, Y" }}</div>
+              </div>
+              
+              <div class="d-flex mb-2">
+                <div class="text-muted me-3"><i class="fas fa-utensils me-2"></i>Meals:</div>
+                <div>{{ booking.package.complementary }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Booking Details Card -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Booking Information</h5>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <tbody>
+              <tr>
+                <th style="width: 30%">Booking ID</th>
+                <td>#{{ booking.id }}</td>
+              </tr>
+              <tr>
+                <th>Booking Date</th>
+                <td>{{ booking.created_at|date:"F d, Y, h:i A" }}</td>
+              </tr>
+              <tr>
+                <th>Guest Count</th>
+                <td>{{ booking.guest_count }}</td>
+              </tr>
+              <tr>
+                <th>Amount</th>
+                <td class="fw-bold text-success">৳{{ booking.amount }}</td>
+              </tr>
+              <tr>
+                <th>Payment Status</th>
+                <td>
+                  <span class="badge {% if booking.status == 'Success' %}bg-success{% elif booking.status == 'Pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                    {{ booking.status }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Transaction ID</th>
+                <td>{{ booking.transaction_id|default:"N/A" }}</td>
+              </tr>
+                {% if booking.status == 'Pending' and is_owner %}
+              <tr>
+                <th>Actions</th>
+                <td>
+                  <a href="{% url 'remove-booking' booking.id %}" class="btn btn-sm btn-danger cancel-booking">
+                    <i class="fas fa-times me-1"></i> Cancel Booking
+                  </a>
+                </td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Information Column -->
+    <div class="col-md-4">
+      <!-- Traveler Information -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Traveler Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="text-center mb-3">
+            {% if booking.user.profile_picture %}
+              <img src="{{ booking.user.profile_picture.url }}" alt="{{ booking.user.first_name }}" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+            {% else %}
+              <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <i class="fas fa-user text-muted fa-2x"></i>
+              </div>
+            {% endif %}
+            <h5 class="mt-2 mb-0">{{ booking.user.first_name }} {{ booking.user.last_name }}</h5>
+            <p class="text-muted small">Traveler</p>
+          </div>
+
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted"><i class="fas fa-envelope me-2"></i>Email:</span>
+              <span>{{ booking.user.email }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted"><i class="fas fa-phone me-2"></i>Phone:</span>
+              <span>{{ booking.user.phone_number|default:"N/A" }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted"><i class="fas fa-map-marker-alt me-2"></i>Address:</span>
+              <span>{{ booking.user.address|default:"N/A" }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tour Guide Information -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Tour Guide Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="text-center mb-3">
+            {% if booking.package.tour_guide.user.profile_picture %}
+              <img src="{{ booking.package.tour_guide.user.profile_picture.url }}" alt="{{ booking.package.tour_guide.user.first_name }}" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+            {% else %}
+              <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <i class="fas fa-user-tie text-muted fa-2x"></i>
+              </div>
+            {% endif %}
+            <h5 class="mt-2 mb-0">{{ booking.package.tour_guide.user.first_name }} {{ booking.package.tour_guide.user.last_name }}</h5>
+            <p class="text-muted small">Tour Guide</p>
+          </div>
+
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted"><i class="fas fa-envelope me-2"></i>Email:</span>
+              <span>{{ booking.package.tour_guide.user.email }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted"><i class="fas fa-phone me-2"></i>Phone:</span>
+              <span>{{ booking.package.tour_guide.user.phone_number|default:"N/A" }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted"><i class="fas fa-map-marker-alt me-2"></i>Location:</span>
+              <span>{{ booking.package.tour_guide.location|default:"N/A" }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted"><i class="fas fa-language me-2"></i>Languages:</span>
+              <span>{{ booking.package.tour_guide.languages|default:"N/A" }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted"><i class="fas fa-award me-2"></i>Experience:</span>
+              <span>{{ booking.package.tour_guide.experience_years }} years</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Package Details Section -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Package Details</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <!-- Tour Locations -->
+            <div class="col-md-6 mb-4">
+              <h6 class="fw-bold mb-3"><i class="fas fa-map-marked-alt me-2"></i>Tour Locations</h6>
+              <div class="list-group">
+                {% for location in booking.package.location.all %}
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <i class="fas fa-map-pin text-danger me-2"></i>
+                      <strong>{{ location.location }}</strong>
+                    </div>
+                    <div>
+                      <span class="badge bg-light text-dark">
+                        <i class="fas fa-hotel me-1"></i>{{ location.hotel }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No specific locations listed.</p>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Package Highlights -->
+            <div class="col-md-6 mb-4">
+              <h6 class="fw-bold mb-3"><i class="fas fa-star me-2"></i>Package Highlights</h6>
+              <ul class="list-group">
+                {% for highlight in booking.package.highlight.all %}
+                <li class="list-group-item">
+                  <i class="fas fa-check-circle text-success me-2"></i>
+                  {{ highlight.highlight }}
+                </li>
+                {% empty %}
+                <p class="text-muted">No highlights listed for this package.</p>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+
+          <!-- Package Description -->
+          <div class="row mt-3">
+            <div class="col-12">
+              <h6 class="fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>Package Description</h6>
+              <div class="p-3 bg-light rounded">
+                {{ booking.package.details|linebreaks }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12 text-center">
+      <a href="{% url 'dashboard' %}" class="btn btn-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.cancel-booking').forEach((btn) => {
+      btn.addEventListener('click', function(e) {
+        if (!confirm('Are you sure you want to cancel this booking?')) {
+          e.preventDefault();
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

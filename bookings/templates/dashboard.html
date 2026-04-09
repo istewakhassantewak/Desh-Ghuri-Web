@@ -1,0 +1,752 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid dashboard-shell">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar py-4">
+      <div class="position-sticky">
+        <div class="text-center mb-4">
+          {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" alt="Profile" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+          {% else %}
+            <img src="{% static 'img/default-profile.jpg' %}" alt="Profile" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+          {% endif %}
+          <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+          <p class="text-muted">{% if user.user_type == 'tour_guide' %}Tour Guide{% else %}Traveler{% endif %}</p>
+        </div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="#dashboard-home" data-bs-toggle="tab">
+              <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </a>
+          </li>
+          {% if user.user_type == 'tour_guide' %}
+          <li class="nav-item">
+            <a class="nav-link" href="#my-packages" data-bs-toggle="tab">
+              <i class="fas fa-suitcase me-2"></i>My Packages
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#create-package" data-bs-toggle="tab">
+              <i class="fas fa-plus-circle me-2"></i>Create Package
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#bookings" data-bs-toggle="tab">
+              <i class="fas fa-calendar-check me-2"></i>Manage Bookings
+            </a>
+          </li>
+          {% endif %}
+          
+          <li class="nav-item">
+            <a class="nav-link" href="#my-bookings" data-bs-toggle="tab">
+              <i class="fas fa-ticket-alt me-2"></i>Booked Packages
+            </a>
+          </li>
+          {% if user.user_type == 'traveler' %}
+          <li class="nav-item">
+            <a class="nav-link" href="#saved-packages" data-bs-toggle="tab">
+              <i class="fas fa-heart me-2"></i>Saved Packages
+            </a>
+          </li>
+          {% endif %}
+          
+          <li class="nav-item">
+            <a class="nav-link" href="#profile" data-bs-toggle="tab">
+              <i class="fas fa-user-circle me-2"></i>Profile
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Main content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+      <div class="tab-content">
+        <!-- Dashboard Home Tab -->
+        <div class="tab-pane fade show active" id="dashboard-home">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h2>Dashboard</h2>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <div class="btn-group me-2">
+                <span class="btn btn-sm btn-outline-secondary">
+                  <i class="fas fa-calendar me-1"></i>Today is {{ today|date:"F d, Y" }}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Stats Cards -->
+          <div class="row g-4 mb-4">
+            {% if user.user_type == 'tour_guide' %}
+            <div class="col-md-4">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                  <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                    <i class="fas fa-suitcase text-primary fa-2x"></i>
+                  </div>
+                  <div>
+                    <h6 class="card-title mb-0">Total Packages</h6>
+                    <h2 class="mt-2 mb-0">{{ packages.count }}</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                  <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                    <i class="fas fa-users text-success fa-2x"></i>
+                  </div>
+                  <div>
+                    <h6 class="card-title mb-0">Total Bookings</h6>
+                    <h2 class="mt-2 mb-0">{{ bookings.count }}</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {% else %}
+            <!-- Traveler Stats -->
+            <div class="col-md-4">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                  <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                    <i class="fas fa-ticket-alt text-primary fa-2x"></i>
+                  </div>
+                  <div>
+                    <h6 class="card-title mb-0">My Bookings</h6>
+                    <h2 class="mt-2 mb-0">{{ traveler_bookings.count|default:0 }}</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+           
+            <div class="col-md-4">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                  <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                    <i class="fas fa-plane-departure text-success fa-2x"></i>
+                  </div>
+                  <div>
+                    <h6 class="card-title mb-0">Upcoming Trips</h6>
+                    <h2 class="mt-2 mb-0">{{ upcoming_trips|default:0 }}</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          
+          <!-- Featured Content Section -->
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white">
+              <h5 class="mb-0">
+                {% if user.user_type == 'tour_guide' %}Recent Activity{% else %}Featured Packages{% endif %}
+              </h5>
+            </div>
+            <div class="card-body">
+              {% if user.user_type == 'tour_guide' %}
+                <!-- Tour Guide Recent Activity -->
+                <div class="timeline">
+                  {% if recent_activities %}
+                    {% for activity in recent_activities %}
+                    <div class="timeline-item">
+                      <div class="timeline-item-marker">
+                        <div class="timeline-item-marker-text">{{ activity.timestamp|date:"M d" }}</div>
+                        <div class="timeline-item-marker-indicator bg-primary"></div>
+                      </div>
+                      <div class="timeline-item-content">
+                        {{ activity.description }}
+                      </div>
+                    </div>
+                    {% endfor %}
+                  {% else %}
+                    <p class="text-muted">No recent activities found.</p>
+                  {% endif %}
+                </div>
+              {% else %}
+                <!-- Traveler Featured Packages -->
+                <div class="row g-4">
+                  {% for package in featured_packages|slice:":3" %}
+                  <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                      <img src="{{ package.image.url }}" class="card-img-top" alt="{{ package.title }}" style="height: 150px; object-fit: cover;">
+                      <div class="card-body">
+                        <h5 class="card-title">{{ package.title }}</h5>
+                        <p class="card-text text-muted"><i class="fas fa-map-marker-alt text-danger me-1"></i>{{ package.main_location }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                          <span class="text-primary fw-bold">৳{{ package.price }}</span>
+                          <a href="{% url 'package-details' package.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% empty %}
+                  <p class="text-muted">No featured packages found.</p>
+                  {% endfor %}
+                </div>
+                <div class="text-center mt-3">
+                  <a href="{% url 'home' %}" class="btn btn-outline-primary">View All Packages</a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        
+        <!-- My Packages Tab (Tour Guide Only) -->
+        {% if user.user_type == 'tour_guide' %}
+        <div class="tab-pane fade" id="my-packages">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h2>My Tour Packages</h2>
+            <a href="#create-package" class="btn btn-primary" data-bs-toggle="tab">
+              <i class="fas fa-plus me-1"></i> Create New Package
+            </a>
+          </div>
+          
+          {% if packages %}
+          <div class="row g-4">
+            {% for package in packages %}
+            <div class="col-md-6 col-lg-4">
+              <div class="card package-card h-100 border-0 shadow-sm">
+                <div class="position-relative">
+                  <img src="{{ package.image.url }}" class="card-img-top" alt="{{ package.title }}" style="height: 200px; object-fit: cover;">
+                  <div class="package-actions position-absolute top-0 end-0 m-2">
+                    <div class="btn-group">
+                      <a href="{% url 'package-details' package.id %}" class="btn btn-sm btn-light" title="View Package">
+                        <i class="fas fa-eye"></i>
+                      </a>
+                      <button type="button" class="btn btn-sm btn-light delete-package" data-id="{{ package.id }}" data-bs-toggle="modal" data-bs-target="#deletePackageModal">
+                        <i class="fas fa-trash text-danger"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-light text-dark">
+                      <i class="fas fa-calendar-alt me-1"></i>
+                      {{ package.start_date|date:"d M" }} - {{ package.end_date|date:"d M" }}
+                    </span>
+                    <span class="text-primary fw-bold">৳{{ package.price }}</span>
+                  </div>
+                  <h5 class="card-title">{{ package.title }}</h5>
+                  <p class="card-text text-muted">
+                    <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ package.main_location }}
+                  </p>
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <a href="{% url 'package-details' package.id %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                    <span class="text-muted small">{{ package.bookings.count }} bookings</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="text-center py-5">
+            <i class="fas fa-suitcase-rolling fa-3x text-muted mb-3"></i>
+            <h4>No packages yet</h4>
+            <p class="text-muted">You haven't created any tour packages yet.</p>
+            <a href="#create-package" class="btn btn-primary" data-bs-toggle="tab">Create Your First Package</a>
+          </div>
+          {% endif %}
+        </div>
+        
+        <!-- Create Package Tab (Tour Guide Only) -->
+        <div class="tab-pane fade" id="create-package">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h2>Create New Package</h2>
+          </div>
+          
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <form method="POST" action="{% url 'create-package' %}" enctype="multipart/form-data" id="packageForm">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="title" class="form-label">Package Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="location" class="form-label"> Main Location</label>
+                    <input type="text" class="form-control" id="location" name="location" required>
+                  </div>
+                </div>
+                
+                <div class="row mb-3">
+                  <div class="col-md-4">
+                    <label for="price" class="form-label">Price (৳)</label>
+                    <input type="number" class="form-control" id="price" name="price" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="start_date" class="form-label">Start Date</label>
+                    <input type="datetime-local" class="form-control" id="start_date" name="start_date" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="end_date" class="form-label">End Date</label>
+                    <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="complementary" class="form-label">Complementary</label>
+                  <select class="form-select" id="complementary" name="complementary">
+                    <option value="breakfast">Breakfast</option>
+                    <option value="all_meals">All Meals</option>
+                    <option value="breakfast_lunch">Breakfast & Lunch</option>
+                  </select>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="image" class="form-label">Package Image</label>
+                  <input type="file" class="form-control" id="image" name="image" required>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="details" class="form-label">Package Details</label>
+                  <textarea class="form-control" id="details" name="details" rows="5" required></textarea>
+                </div>
+                
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Tour Locations</label>
+                    <div id="locationContainer">
+                      <div class="input-group mb-2">
+                        <select class="form-select location-select" name="tour_location[]">
+                          <option value="">Select Location</option>
+                          {% for location in tour_locations %}
+                            <option value="{{ location }}">{{ location }}</option>
+                          {% endfor %}
+                          <option value="new">+ Add New Location</option>
+                        </select>
+                        <input type="text" class="form-control new-location" style="display: none;" placeholder="Enter new location">
+                        <input type="text" class="form-control" name="tour_hotel[]" placeholder="Hotel name">
+                        <button type="button" class="btn btn-outline-success add-location">
+                          <i class="fas fa-plus"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Package Highlights</label>
+                    <div id="highlightContainer">
+                      <div class="input-group mb-2">
+                        <input type="text" class="form-control" name="highlight[]" placeholder="Package highlight">
+                        <button type="button" class="btn btn-outline-success add-highlight">
+                          <i class="fas fa-plus"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-label">Transportation</label>
+                  <div id="transportContainer">
+                    <div class="input-group mb-2">
+                      <select class="form-select vehicle-select" name="transport_vehicle[]">
+                        <option value="">Select Vehicle Type</option>
+                        {% for vehicle in transport_vehicles %}
+                          <option value="{{ vehicle }}">{{ vehicle }}</option>
+                        {% endfor %}
+                        <option value="new">+ Add New Vehicle Type</option>
+                      </select>
+                      <input type="text" class="form-control new-vehicle" style="display: none;" placeholder="Enter new vehicle type">
+                      <input type="text" class="form-control" name="transport_description[]" placeholder="Description">
+                      <button type="button" class="btn btn-outline-success add-transport">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="text-end">
+                  <button type="reset" class="btn btn-outline-secondary me-2">Reset</button>
+                  <button type="submit" class="btn btn-primary">Create Package</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tour Guide Bookings Tab -->
+        <div class="tab-pane fade" id="bookings">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h2>Manage Bookings</h2>
+          </div>
+          
+          {% if bookings %}
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Booking ID</th>
+                      <th>Package</th>
+                      <th>Traveler</th>
+                      <th>Contact</th>
+                      <th>Date</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                      <td>#{{ booking.id }}</td>
+                      <td>{{ booking.package.title }}</td>
+                      <td>
+                        <div>{{ booking.user.first_name }} {{ booking.user.last_name }}</div>
+                        <small class="text-muted">{{ booking.user.email }}</small>
+                      </td>
+                      <td>{{ booking.user.phone_number|default:"N/A" }}</td>
+                      <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                      <td>৳{{ booking.amount }}</td>
+                      <td>
+                        <span class="badge {% if booking.status == 'Success' %}bg-success{% elif booking.status == 'Pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                          {{ booking.status }}
+                        </span>
+                      </td>
+                      <td>
+                        
+                        <a href="{% url 'order-details' booking.id %}" class="btn btn-sm btn-outline-primary">
+                          <i class="fas fa-file-alt"></i> Full Details
+                        </a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <div class="text-center py-5">
+            <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
+            <h4>No bookings yet</h4>
+            <p class="text-muted">You don't have any bookings for your packages yet.</p>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- Booked Packages Tab (For All Users) -->
+        <div class="tab-pane fade" id="my-bookings">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h2>Booked Packages</h2>
+          </div>
+          
+          {% if traveler_bookings %}
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Booking ID</th>
+                      <th>Package</th>
+                      <th>Tour Guide</th>
+                      <th>Contact</th>
+                      <th>Date</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for booking in traveler_bookings %}
+                    <tr>
+                      <td>#{{ booking.id }}</td>
+                      <td>
+                        <div>{{ booking.package.title }}</div>
+                        <small class="text-muted">{{ booking.package.main_location }}</small>
+                      </td>
+                      <td>{{ booking.package.tour_guide.user.first_name }} {{ booking.package.tour_guide.user.last_name }}</td>
+                      <td>{{ booking.package.tour_guide.user.phone_number|default:"N/A" }}</td>
+                      <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                      <td>৳{{ booking.amount }}</td>
+                      <td>
+                        <span class="badge {% if booking.status == 'Success' %}bg-success{% elif booking.status == 'Pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                          {{ booking.status }}
+                        </span>
+                      </td>
+                      <td>
+                        <div class="btn-group">
+
+                          <a href="{% url 'order-details' booking.id %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-file-alt"></i> Full Details
+                          </a>
+                          {% if booking.status == 'Pending' %}
+                          <a href="{% url 'remove-booking' booking.id %}" class="btn btn-sm btn-outline-danger cancel-booking" data-id="{{ booking.id }}">
+                            <i class="fas fa-times"></i>
+                          </a>
+                          {% endif %}
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <div class="text-center py-5">
+            <i class="fas fa-ticket-alt fa-3x text-muted mb-3"></i>
+            <h4>No bookings yet</h4>
+            <p class="text-muted">You haven't made any bookings yet.</p>
+            <a href="{% url 'home' %}" class="btn btn-primary">Browse Packages</a>
+          </div>
+          {% endif %}
+        </div>
+        
+        <!-- Traveler Specific Tabs -->
+        {% if user.user_type == 'traveler' %}
+        <!-- Saved Packages Tab for Travelers -->
+        <div class="tab-pane fade" id="saved-packages">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h2>Saved Packages</h2>
+          </div>
+          
+          {% if saved_packages %}
+          <div class="row g-4">
+            {% for package in saved_packages %}
+            <div class="col-md-6 col-lg-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="position-relative">
+                  <img src="{{ package.image.url }}" class="card-img-top" alt="{{ package.title }}" style="height: 200px; object-fit: cover;">
+                  <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 remove-saved" data-id="{{ package.id }}">
+                    <i class="fas fa-heart-broken"></i>
+                  </button>
+                </div>
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-light text-dark">
+                      <i class="fas fa-calendar-alt me-1"></i>
+                      {{ package.start_date|date:"d M" }} - {{ package.end_date|date:"d M" }}
+                    </span>
+                    <span class="text-primary fw-bold">৳{{ package.price }}</span>
+                  </div>
+                  <h5 class="card-title">{{ package.title }}</h5>
+                  <p class="card-text text-muted">
+                    <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ package.main_location }}
+                  </p>
+                  <div class="d-grid gap-2 mt-3">
+                    <a href="{% url 'package-details' package.id %}" class="btn btn-outline-primary">View Details</a>
+                    <button class="btn btn-primary book-now" data-id="{{ package.id }}">Book Now</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="text-center py-5">
+            <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+            <h4>No saved packages</h4>
+            <p class="text-muted">You haven't saved any packages yet.</p>
+            <a href="{% url 'home' %}" class="btn btn-primary">Browse Packages</a>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- Profile Tab (Common for all users) -->
+        <div class="tab-pane fade" id="profile">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h2>My Profile</h2>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-4 mb-4">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                  {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="Profile" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                  {% else %}
+                    <img src="{% static 'img/default-profile.jpg' %}" alt="Profile" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                  {% endif %}
+                  <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+                  <p class="text-muted">{% if user.user_type == 'tour_guide' %}Tour Guide{% else %}Traveler{% endif %}</p>
+                  <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updateProfilePicModal">
+                      <i class="fas fa-camera me-1"></i> Change Photo
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-8">
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Personal Information</h5>
+                  <button class="btn btn-sm btn-outline-primary" id="editProfileBtn">
+                    <i class="fas fa-edit me-1"></i> Edit
+                  </button>
+                </div>
+                <div class="card-body">
+                  <form id="profileForm" method="POST" action="{% url 'update-profile' %}">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="first_name" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}" disabled>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}" disabled>
+                      </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" value="{{ user.email }}" disabled>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="phone_number" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="phone_number" name="phone_number" value="{{ user.phone_number }}" disabled>
+                      </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                      <label for="address" class="form-label">Address</label>
+                      <input type="text" class="form-control" id="address" name="address" value="{{ user.address }}" disabled>
+                    </div>
+                    
+                    {% if user.user_type == 'tour_guide' %}
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" value="{{ guide_profile.location }}" disabled>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="experience_years" class="form-label">Years of Experience</label>
+                        <input type="number" class="form-control" id="experience_years" name="experience_years" value="{{ guide_profile.experience_years }}" disabled>
+                      </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="languages" class="form-label">Languages</label>
+                        <input type="text" class="form-control" id="languages" name="languages" value="{{ guide_profile.languages }}" disabled>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="expertise" class="form-label">Expertise</label>
+                        <input type="text" class="form-control" id="expertise" name="expertise" value="{{ guide_profile.expertise }}" disabled>
+                      </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                      <label for="bio" class="form-label">Bio</label>
+                      <textarea class="form-control" id="bio" name="bio" rows="4" disabled>{{ guide_profile.bio }}</textarea>
+                    </div>
+                    {% else %}
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="preferences" class="form-label">Travel Preferences</label>
+                        <input type="text" class="form-control" id="preferences" name="preferences" value="{{ traveler_profile.preferences }}" disabled>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="interests" class="form-label">Interests</label>
+                        <input type="text" class="form-control" id="interests" name="interests" value="{{ traveler_profile.interests }}" disabled>
+                      </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="text-end" id="profileButtons" style="display: none;">
+                      <button type="button" id="cancelEditBtn" class="btn btn-outline-secondary me-2">Cancel</button>
+                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modals -->
+{% if user.user_type == 'tour_guide' %}
+<!-- Delete Package Modal -->
+<div class="modal fade" id="deletePackageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this package? This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="deletePackageForm" method="POST" action="{% url 'delete-package' 0 %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Delete Package</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Update Profile Picture Modal (Common) -->
+<div class="modal fade" id="updateProfilePicModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Profile Picture</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{% url 'update-profile-picture' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="profile_picture" class="form-label">Choose a new profile picture</label>
+            <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*" required>
+          </div>
+          <div class="text-end">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Upload</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Viewing Booking Details -->
+
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/dashboard-two.js' %}"></script>
+<script>
+  // Set correct package ID in delete form action
+  document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-package');
+    const deleteForm = document.getElementById('deletePackageForm');
+    if (deleteButtons && deleteForm) {
+      deleteButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const packageId = this.getAttribute('data-id');
+          // Set the form action to the correct package ID
+          deleteForm.action = deleteForm.action.replace(/\d+\/?$/, packageId + '/');
+        });
+      });
+    }
+  });
+</script>
+{% endblock %}

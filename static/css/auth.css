@@ -1,0 +1,11 @@
+.login-section .card,
+.register-section .card {
+  border: 0;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.login-section .card-header,
+.register-section .card-header {
+  background: linear-gradient(135deg, #2f6bff, #14b8a6);
+}

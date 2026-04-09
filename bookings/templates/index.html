@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <section class="modern-hero">
+    <div class="container">
+      <div class="modern-hero__inner">
+        <p class="modern-hero__tag"><i class="fas fa-sparkles me-2"></i>Trusted travel marketplace</p>
+        <h1>Explore Bangladesh with expertly curated tour packages</h1>
+        <p class="modern-hero__lead">Plan memorable trips, compare packages, and book with confidence through verified local guides.</p>
+        <div class="modern-hero__actions">
+          <a href="#tour-packages" class="btn btn-primary btn-lg px-4">Browse Packages</a>
+          <a href="{% url 'register' %}?role=tour_guide" class="btn btn-outline-primary btn-lg px-4">Become a Guide</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="search-section py-4 py-md-5">
+    <div class="container">
+      <div class="search-card">
+        <form method="GET" action="{% url 'home' %}" id="filterForm" class="filter-form">
+          <div class="row g-3">
+            <div class="col-lg-5">
+              <label for="filterLocation" class="form-label">Location</label>
+              <select class="form-select form-select-lg" id="filterLocation" name="location">
+                <option value="">All Locations</option>
+                {% for location in tour_locations %}
+                  <option value="{{ location }}" {% if request.GET.location == location %}selected{% endif %}>{{ location }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-lg-4">
+              <label for="filterDate" class="form-label">Date</label>
+              <input type="date" class="form-control form-control-lg" id="filterDate" name="date" value="{{ request.GET.date|default:'' }}">
+            </div>
+            <div class="col-lg-3 d-flex align-items-end gap-2">
+              <button class="btn btn-primary w-100" type="submit">Search</button>
+              {% if request.GET.location or request.GET.date %}
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary w-100">Clear</a>
+              {% endif %}
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="tour-packages" class="featured-packages py-5">
+    <div class="container">
+      <div class="section-header text-center mb-5">
+        <h2 class="display-5 fw-bold">Featured Tour Packages</h2>
+        <p class="text-muted">Beautiful places, local insights, and flexible travel options</p>
+      </div>
+      
+      <div class="row g-4" id="packagesContainer">
+        {% for package in packages %}
+        <div class="col-md-6 col-lg-4 package-item">
+          <div class="package-card">
+            <div class="package-card-img">
+              <img src="{{ package.image.url }}" alt="{{ package.title }}">
+              <div class="package-price">৳{{ package.price }}</div>
+              <div class="package-duration">
+                <i class="fas fa-clock"></i>
+                {{ package.start_date|date:"d M" }} - {{ package.end_date|date:"d M" }}
+              </div>
+            </div>
+            <div class="package-card-body">
+              <h3 class="package-title">{{ package.title }}</h3>
+              <p class="package-location">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ package.main_location }}
+              </p>
+              <div class="package-meta">
+                {% with first_location=package.location.first %}
+                {% if first_location %}
+                <span>
+                  <i class="fas fa-hotel"></i>
+                  {{ first_location.hotel }}
+                </span>
+                {% endif %}
+                {% endwith %}
+                <span>
+                  <i class="fas fa-utensils"></i>
+                  {% if package.complementary == 'breakfast' %}
+                    Breakfast
+                  {% elif package.complementary == 'all_meals' %}
+                    All Meals
+                  {% elif package.complementary == 'breakfast_lunch' %}
+                    Breakfast & Lunch
+                  {% endif %}
+                </span>
+              </div>
+              <a href="{% url 'package-details' package.id %}" class="view-details-btn">View Details</a>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <div class="no-results">
+            <i class="fas fa-search"></i>
+            <h3>No packages found</h3>
+            <p>Try adjusting your filters or search for a different location</p>
+            <a href="{% url 'home' %}" class="btn btn-outline-primary mt-3">Show All Packages</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-strip py-4">
+    <div class="container">
+      <div class="row text-center g-3">
+        <div class="col-6 col-md-3">
+          <div class="stats-card">
+            <h3>150+</h3>
+            <p>Curated Trips</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stats-card">
+            <h3>80+</h3>
+            <p>Local Guides</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stats-card">
+            <h3>10k+</h3>
+            <p>Happy Travelers</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stats-card">
+            <h3>4.9/5</h3>
+            <p>Average Rating</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="why-choose-us py-5 bg-light">
+    <div class="container">
+      <div class="section-header text-center mb-5">
+        <h2 class="display-5 fw-bold">Why Travelers Choose Us</h2>
+        <p class="text-muted">Designed for smooth planning, secure booking, and memorable journeys</p>
+      </div>
+      
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="feature-card text-center">
+            <div class="feature-icon mb-3">
+              <i class="fas fa-user-tie fa-3x text-primary"></i>
+            </div>
+            <h3>Expert Local Guides</h3>
+            <p>Our tour guides are certified professionals with deep knowledge of local culture, history, and hidden gems.</p>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="feature-card text-center">
+            <div class="feature-icon mb-3">
+              <i class="fas fa-hand-holding-usd fa-3x text-primary"></i>
+            </div>
+            <h3>Best Price Guarantee</h3>
+            <p>We offer the most competitive prices for premium travel experiences with no hidden costs.</p>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="feature-card text-center">
+            <div class="feature-icon mb-3">
+              <i class="fas fa-shield-alt fa-3x text-primary"></i>
+            </div>
+            <h3>Safe & Secure</h3>
+            <p>Your safety is our priority. We follow strict safety protocols and provide 24/7 support during your trip.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="become-guide py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <img src="https://images.pexels.com/photos/1813922/pexels-photo-1813922.jpeg" alt="Tour Guide" class="img-fluid rounded-3">
+        </div>
+        <div class="col-lg-6">
+          <div class="p-4">
+            <h2 class="display-6 fw-bold mb-3">Become a Tour Guide</h2>
+            <p class="lead">Share your passion for Bangladesh and earn by creating unique travel experiences.</p>
+            <ul class="feature-list">
+              <li><i class="fas fa-check-circle text-success me-2"></i> Create and manage your own tour packages</li>
+              <li><i class="fas fa-check-circle text-success me-2"></i> Set your own prices and availability</li>
+              <li><i class="fas fa-check-circle text-success me-2"></i> Showcase your expertise and knowledge</li>
+              <li><i class="fas fa-check-circle text-success me-2"></i> Connect with travelers from around the world</li>
+            </ul>
+            <a href="{% url 'register' %}?role=tour_guide" class="btn btn-primary btn-lg mt-3">Start as a Guide</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

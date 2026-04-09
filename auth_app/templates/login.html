@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="login-section py-5 auth-shell">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow-lg">
+          <div class="card-header bg-primary text-white">
+            <h3 class="mb-0 text-center">Login to Your Account</h3>
+          </div>
+          <div class="card-body p-4">
+            {% if messages %}
+            <div class="alert alert-danger">
+              {% for message in messages %}
+              <p {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+              {% endfor %}
+            </div>
+            {% endif %}
+            
+            <form method="POST" action="{% url 'login' %}">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="role" class="form-label">Login as</label>
+                <select class="form-select form-select-lg" id="role" name="role" required>
+                  <option value="traveler">Traveler</option>
+                  <option value="tour_guide">Tour Guide</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" class="form-control form-control-lg" id="email" name="email" required>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control form-control-lg" id="password" name="password" required>
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">Remember me</label>
+              </div>
+              <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">Login</button>
+              </div>
+            </form>
+          </div>
+          <div class="card-footer text-center py-3">
+            <div class="mb-3">
+              <a href="{% url 'contact' %}" class="text-decoration-none">Need help signing in?</a>
+            </div>
+            <div>
+              Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none">Register now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

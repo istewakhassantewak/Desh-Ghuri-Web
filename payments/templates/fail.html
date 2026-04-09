@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Failed{% endblock %}
+
+{% block content %}
+<section class="py-5 status-shell">
+  <div class="container">
+    <div class="card shadow-sm text-center p-5">
+      <div class="status-icon error text-danger"><i class="fas fa-circle-xmark fa-3x"></i></div>
+      <h2 class="mb-3">Payment Failed</h2>
+      <p class="text-muted mb-4">Your payment could not be completed.</p>
+      <p><strong>Booking ID:</strong> #{{ booking.id }}</p>
+      <a class="btn btn-outline-primary" href="{% url 'package-details' booking.package.id %}">Try Again</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

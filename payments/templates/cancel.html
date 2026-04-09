@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Cancelled{% endblock %}
+
+{% block content %}
+<section class="py-5 status-shell">
+  <div class="container">
+    <div class="card shadow-sm text-center p-5">
+      <div class="status-icon warn text-warning"><i class="fas fa-circle-pause fa-3x"></i></div>
+      <h2 class="mb-3">Payment Cancelled</h2>
+      <p class="text-muted mb-4">You cancelled the payment process.</p>
+      <a class="btn btn-primary" href="{% url 'home' %}">Back to Home</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
