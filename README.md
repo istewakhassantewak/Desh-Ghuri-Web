@@ -1,65 +1,82 @@
-# Desh-Ghuri Web
+🌍 Desh-Ghuri Web – Travel Booking Platform
 
-Modern Django travel booking platform with role-based users (Traveler/Tour Guide), package listing, booking flow, dashboard, and SSLCommerz payment integration.
+Desh-Ghuri is a modern Django-based travel booking platform with role-based authentication, package management, booking system, and integrated payment gateway support. It is designed for travelers and tour guides with a complete end-to-end booking flow.
 
-## 1) Requirements
+🚀 Key Features
+👤 Role-based system (Traveler / Tour Guide)
+🧳 Travel package listing and management
+📅 Booking system with dashboard support
+💳 Payment integration (SSLCommerz)
+🔐 Authentication system with Django
+📊 Admin + user dashboards
+⚙️ Modular Django app structure
+🧰 Tech Stack
+Backend: Django (Python)
+Database: SQLite / PostgreSQL (production recommended)
+Frontend: Django Templates (HTML, CSS)
+Payments: SSLCommerz
+Deployment: Render / Vercel (config included)
+📁 Project Structure
+Desh-Ghuri/
+│── api/
+│── auth_app/
+│── bookings/
+│── core/
+│── payments/
+│── static/
+│── manage.py
+│── requirements.txt
+│── vercel.json
+│── .env.example
+│── .gitignore
+└── README.md
+⚙️ Local Setup
+1. Clone Repository
+git clone https://github.com/istewakhassantewak/desh-ghuri.git
+cd desh-ghuri
+2. Create Virtual Environment
+py -3.13 -m venv .venv
+.venv\Scripts\Activate.ps1
+3. Install Dependencies
+pip install -r requirements.txt
+4. Setup Environment
 
-- Python 3.13 recommended (Windows users should avoid Python 3.14 for this project)
-- pip
-- virtualenv (optional but recommended)
+Copy .env.example → .env and configure:
 
-## 2) Local Setup
+SECRET_KEY
+DEBUG
+ALLOWED_HOSTS
+BASE_URL
+SSLCommerz credentials
+5. Run Migrations
+python manage.py migrate
+6. Start Server
+python manage.py runserver
 
-1. Create and activate virtual environment:
-   - Windows PowerShell:
-     - `py -3.13 -m venv .venv`
-     - `.venv\Scripts\Activate.ps1`
-2. Install dependencies:
-   - `pip install -r requirements.txt`
-3. Create your env file:
-   - Copy `.env.example` to `.env`
-   - Update values as needed
-4. Run migrations:
-   - `python manage.py migrate`
-5. Start server:
-   - `python manage.py runserver`
-6. Open:
-   - `http://127.0.0.1:8000/`
+Visit:
+👉 http://127.0.0.1:8000/
 
-## 3) Environment Variables
+🌐 Deployment (Render)
+Build Command
+pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+Start Command
+gunicorn core.wsgi:application
+🔐 Environment Variables (Production)
+SECRET_KEY=...
+DEBUG=False
+ALLOWED_HOSTS=your-domain.com
+BASE_URL=https://your-domain.com
+SSL_COMMERZ_STORE_ID=...
+SSL_COMMERZ_STORE_PASSWORD=...
+SSL_COMMERZ_SANDBOX_MODE=False
+⚠️ Important Notes
+Never commit .env file
+Use PostgreSQL in production
+Run deployment check:
+python manage.py check --deploy
+👨‍💻 Author
 
-Required variables (see `.env.example`):
+Istewak Hassan Tewak
 
-- `SECRET_KEY` - Django secret key
-- `DEBUG` - `True` for local, `False` for production
-- `ALLOWED_HOSTS` - comma-separated domains/IPs
-- `BASE_URL` - full app base URL (used for payment callback URLs)
-- `SSL_COMMERZ_STORE_ID`
-- `SSL_COMMERZ_STORE_PASSWORD`
-- `SSL_COMMERZ_SANDBOX_MODE` - `True`/`False`
-
-## 4) Production Deploy (Render)
-
-### Build Command
-
-`pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
-
-### Start Command
-
-`gunicorn core.wsgi:application`
-
-### Environment Variables on Render
-
-- `SECRET_KEY=...`
-- `DEBUG=False`
-- `ALLOWED_HOSTS=your-app.onrender.com`
-- `BASE_URL=https://your-app.onrender.com`
-- `SSL_COMMERZ_STORE_ID=...`
-- `SSL_COMMERZ_STORE_PASSWORD=...`
-- `SSL_COMMERZ_SANDBOX_MODE=False` (or `True` for sandbox/testing)
-
-## 5) Important Notes
-
-- Do not commit `.env` to version control.
-- For production, use a managed Postgres database if possible.
-- Run `python manage.py check --deploy` before going live.
+GitHub: https://github.com/istewakhassantewak
+Portfolio: https://istewak-protfolio.vercel.app/
