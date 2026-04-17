@@ -79,4 +79,4 @@ python manage.py check --deploy
 Istewak Hassan Tewak
 
 GitHub: https://github.com/istewakhassantewak
-Portfolio: desh-ghuri-web.vercel.app
+Portfolio: https://istewak-protfolio.vercel.app/
